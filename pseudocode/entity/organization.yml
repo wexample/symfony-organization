@@ -5,6 +5,14 @@ items:
     properties:
       - name: name
         type: string
+      - name: country
+        type: Wexample\SymfonyGeo\Entity\Country
+        nullable: true
+        default: null
+      - name: address
+        type: Wexample\SymfonyGeo\Entity\Address
+        nullable: true
+        default: null
       - name: legalIdentifier
         type: string
         nullable: true
@@ -30,30 +38,6 @@ items:
         default: null
       - name: website
         type: string
-        nullable: true
-        default: null
-      - name: postalAddress
-        type: string
-        nullable: true
-        default: null
-      - name: postCode
-        type: string
-        nullable: true
-        default: null
-      - name: city
-        type: string
-        nullable: true
-        default: null
-      - name: country
-        type: Wexample\SymfonyGeo\Entity\Country
-        nullable: true
-        default: null
-      - name: latitude
-        type: float
-        nullable: true
-        default: null
-      - name: longitude
-        type: float
         nullable: true
         default: null
       - name: id
@@ -162,39 +146,6 @@ items:
         return:
           type: static
       - type: method
-        name: getPostalAddress
-        return:
-          type: string
-      - type: method
-        name: setPostalAddress
-        parameters:
-          - type: string
-            name: postalAddress
-        return:
-          type: static
-      - type: method
-        name: getPostCode
-        return:
-          type: string
-      - type: method
-        name: setPostCode
-        parameters:
-          - type: string
-            name: postCode
-        return:
-          type: static
-      - type: method
-        name: getCity
-        return:
-          type: string
-      - type: method
-        name: setCity
-        parameters:
-          - type: string
-            name: city
-        return:
-          type: static
-      - type: method
         name: getCountry
         return:
           type: Wexample\SymfonyGeo\Entity\Country
@@ -206,35 +157,16 @@ items:
         return:
           type: static
       - type: method
-        name: copyAddressFrom
+        name: getAddress
+        return:
+          type: Wexample\SymfonyGeo\Entity\Address
+      - type: method
+        name: setAddress
         parameters:
-          - type: Wexample\SymfonyGeo\Interface\PostalAddressInterface
+          - type: Wexample\SymfonyGeo\Entity\Address
             name: address
         return:
           type: static
-      - type: method
-        name: hasPostalAddress
-        return:
-          type: bool
-      - type: method
-        name: toStringInline
-        return:
-          type: string
-      - type: method
-        name: getGeoPoint
-        return:
-          type: Wexample\SymfonyGeo\Class\GeoPoint
-      - type: method
-        name: setGeoPoint
-        parameters:
-          - type: Wexample\SymfonyGeo\Class\GeoPoint
-            name: point
-        return:
-          type: static
-      - type: method
-        name: isGeoLocated
-        return:
-          type: bool
       - type: method
         name: buildEntityPath
         parameters:
