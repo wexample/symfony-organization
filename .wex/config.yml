@@ -1,0 +1,7 @@
+domain: symfony-organization.wex
+global:
+  name: symfony-organization
+  type: php-package
+  version: 1.0.0
+wex:
+  version: 6.0.144
