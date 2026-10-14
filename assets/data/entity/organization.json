@@ -1,7 +1,7 @@
 {
     "name": "organization",
     "type": "class",
-    "description": "An organization of the directory — a company, a sole trader, an\nassociation, a private person —, once, whatever points to it: the ledger\nkeeping its books, the parties it is to other ledgers, its projects, its\nmails. Its identity is changed here, for all of them; documents already\nissued keep the copy they froze.\nIt keeps an address book of the people met there (Contact), one of whom\nits invoices are addressed to.",
+    "description": "An organization of the directory — a company, a sole trader, an\nassociation, a private person —, once, whatever points to it: the ledger\nkeeping its books, the parties it is to other ledgers, its projects, its\nmails. Its identity is changed here, for all of them; documents already\nissued keep the copy they froze.\nIt keeps an address book of the people met there (Contact), one of whom\nits invoices are addressed to, and the accounts belonging to it\n(OrganizationMembership): it is a group of symfony-user's memberships.",
     "properties": [
         {
             "name": "name",
@@ -84,6 +84,11 @@
             "name": "contacts",
             "type": "Collection",
             "description": "Contact> Its address book."
+        },
+        {
+            "name": "memberships",
+            "type": "Collection",
+            "description": "OrganizationMembership> The accounts belonging to it."
         },
         {
             "name": "billingContact",
@@ -448,6 +453,48 @@
                 {
                     "type": "Contact",
                     "name": "contact"
+                }
+            ],
+            "return": {
+                "type": "static"
+            }
+        },
+        {
+            "type": "method",
+            "name": "getMembershipLabel",
+            "return": {
+                "type": "string"
+            }
+        },
+        {
+            "type": "method",
+            "name": "getMemberships",
+            "description": "",
+            "return": {
+                "type": "Collection",
+                "description": "OrganizationMembership>"
+            }
+        },
+        {
+            "type": "method",
+            "name": "addMembership",
+            "parameters": [
+                {
+                    "type": "OrganizationMembership",
+                    "name": "membership"
+                }
+            ],
+            "return": {
+                "type": "static"
+            }
+        },
+        {
+            "type": "method",
+            "name": "removeMembership",
+            "parameters": [
+                {
+                    "type": "OrganizationMembership",
+                    "name": "membership"
                 }
             ],
             "return": {

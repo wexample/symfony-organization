@@ -17,6 +17,7 @@ use Wexample\SymfonyOrganization\Validator\Constraint\ValidLegalIdentity;
 use Wexample\SymfonySearch\Attribute\Searchable;
 use Wexample\SymfonySearch\Attribute\SearchEmail;
 use Wexample\SymfonySearch\Attribute\SearchText;
+use Wexample\SymfonyUser\Interface\MembershipGroupInterface;
 
 /**
  * An organization of the directory — a company, a sole trader, an
@@ -26,7 +27,8 @@ use Wexample\SymfonySearch\Attribute\SearchText;
  * issued keep the copy they froze.
  *
  * It keeps an address book of the people met there (Contact), one of whom
- * its invoices are addressed to.
+ * its invoices are addressed to, and the accounts belonging to it
+ * (OrganizationMembership): it is a group of symfony-user's memberships.
  */
 #[PseudocodeExport(inherited: true)]
 #[ORM\Entity(repositoryClass: OrganizationRepository::class)]
@@ -38,7 +40,7 @@ use Wexample\SymfonySearch\Attribute\SearchText;
     titleField: 'name',
 )]
 #[ValidLegalIdentity]
-class Organization extends AbstractEntity implements LegalIdentityInterface
+class Organization extends AbstractEntity implements LegalIdentityInterface, MembershipGroupInterface
 {
     use HasLegalIdentityTrait;
 
@@ -57,6 +59,10 @@ class Organization extends AbstractEntity implements LegalIdentityInterface
     #[ORM\OrderBy(['name' => 'ASC'])]
     protected Collection $contacts;
 
+    /** @var Collection<int, OrganizationMembership> The accounts belonging to it. */
+    #[ORM\OneToMany(targetEntity: OrganizationMembership::class, mappedBy: 'organization', cascade: ['persist'], orphanRemoval: true)]
+    protected Collection $memberships;
+
     /** Whom its invoices are addressed to, one of its own contacts. */
     #[ORM\ManyToOne(targetEntity: Contact::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -68,6 +74,7 @@ class Organization extends AbstractEntity implements LegalIdentityInterface
 
         $this->dateCreated = new DateTimeImmutable();
         $this->contacts = new ArrayCollection();
+        $this->memberships = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -129,6 +136,35 @@ class Organization extends AbstractEntity implements LegalIdentityInterface
         if ($this->billingContact === $contact) {
             $this->billingContact = null;
         }
+
+        return $this;
+    }
+
+    public function getMembershipLabel(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return Collection<int, OrganizationMembership>
+     */
+    public function getMemberships(): Collection
+    {
+        return $this->memberships;
+    }
+
+    public function addMembership(OrganizationMembership $membership): static
+    {
+        if (! $this->memberships->contains($membership)) {
+            $this->memberships->add($membership);
+        }
+
+        return $this;
+    }
+
+    public function removeMembership(OrganizationMembership $membership): static
+    {
+        $this->memberships->removeElement($membership);
 
         return $this;
     }
