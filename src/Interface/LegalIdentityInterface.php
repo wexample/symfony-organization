@@ -2,14 +2,14 @@
 
 namespace Wexample\SymfonyOrganization\Interface;
 
-use Wexample\SymfonyGeo\Interface\PostalAddressInterface;
+use Wexample\SymfonyGeo\Entity\Address;
+use Wexample\SymfonyGeo\Entity\Country;
 
 /**
  * Who someone is, legally: what an invoice prints about its issuer and its
- * client, what VIES checks, what a legal identifier scheme validates. The
- * country is the one of the postal address.
+ * client, what VIES checks, what a legal identifier scheme validates.
  */
-interface LegalIdentityInterface extends PostalAddressInterface
+interface LegalIdentityInterface
 {
     public function getName(): string;
 
@@ -32,4 +32,10 @@ interface LegalIdentityInterface extends PostalAddressInterface
     public function getPhone(): ?string;
 
     public function getWebsite(): ?string;
+
+    /** The country it is registered in: its identifier scheme, its taxes. */
+    public function getCountry(): ?Country;
+
+    /** Where it is, read live — a document keeps an AddressSnapshot instead. */
+    public function getAddress(): ?Address;
 }

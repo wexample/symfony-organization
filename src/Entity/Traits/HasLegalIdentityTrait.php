@@ -4,18 +4,35 @@ namespace Wexample\SymfonyOrganization\Entity\Traits;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Wexample\SymfonyGeo\Entity\Traits\HasPostalAddressTrait;
+use Wexample\SymfonyGeo\Entity\Address;
+use Wexample\SymfonyGeo\Entity\Country;
 
 /**
  * The columns of a legal identity (LegalIdentityInterface): name, legal
- * identifier, VAT number, legal form, contacts, postal address.
+ * identifier, VAT number, legal form, contacts, the country it answers to and
+ * the address it is at.
  */
 trait HasLegalIdentityTrait
 {
-    use HasPostalAddressTrait;
-
     #[ORM\Column(type: Types::STRING, length: 255)]
     protected string $name;
+
+    /**
+     * Where it is registered, which decides how it is identified and taxed —
+     * not where its mail goes, which is the country of its address.
+     */
+    #[ORM\ManyToOne(targetEntity: Country::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    protected ?Country $country = null;
+
+    /**
+     * Pointed at, never copied: it moves on its own row, for everyone reading
+     * this identity. A document already issued keeps an AddressSnapshot
+     * instead.
+     */
+    #[ORM\ManyToOne(targetEntity: Address::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    protected ?Address $address = null;
 
     #[ORM\Column(type: Types::STRING, length: 50, nullable: true)]
     protected ?string $legalIdentifier = null;
@@ -135,6 +152,30 @@ trait HasLegalIdentityTrait
     public function setWebsite(?string $website): static
     {
         $this->website = $website;
+
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?Address $address): static
+    {
+        $this->address = $address;
 
         return $this;
     }

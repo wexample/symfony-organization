@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyOrganization\Entity\Traits;
 
+use Wexample\SymfonyGeo\Entity\Address;
 use Wexample\SymfonyGeo\Entity\Country;
 
 /**
@@ -57,33 +58,13 @@ trait DelegatesLegalIdentityTrait
         return $this->getOrganization()->getWebsite();
     }
 
-    public function getPostalAddress(): ?string
-    {
-        return $this->getOrganization()->getPostalAddress();
-    }
-
-    public function getPostCode(): ?string
-    {
-        return $this->getOrganization()->getPostCode();
-    }
-
-    public function getCity(): ?string
-    {
-        return $this->getOrganization()->getCity();
-    }
-
     public function getCountry(): ?Country
     {
         return $this->getOrganization()->getCountry();
     }
 
-    public function hasPostalAddress(): bool
+    public function getAddress(): ?Address
     {
-        return $this->getOrganization()->hasPostalAddress();
-    }
-
-    public function toStringInline(): string
-    {
-        return $this->getOrganization()->toStringInline();
+        return $this->getOrganization()->getAddress();
     }
 }

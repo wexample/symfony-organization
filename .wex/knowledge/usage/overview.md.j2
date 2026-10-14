@@ -1,6 +1,6 @@
 ## The directory
 
-`Organization` (table `organization`) holds a legal identity, through `HasLegalIdentityTrait`: `name`, `legalIdentifier`, `vatNumber` (normalized: no space, dot nor dash, upper case), `legalForm`, `individual` (a private person: B2C rules, no VAT number), `email`, `phone`, `website`, and the postal address of `symfony-geo` (`HasPostalAddressTrait`), whose country is the organization's. `externalReference` keeps the key of another system it comes from (an import, a CRM); `notes` are free.
+`Organization` (table `organization`) holds a legal identity, through `HasLegalIdentityTrait`: `name`, `legalIdentifier`, `vatNumber` (normalized: no space, dot nor dash, upper case), `legalForm`, `individual` (a private person: B2C rules, no VAT number), `email`, `phone`, `website`, `country` — the one it is registered in, which decides how it is identified and taxed — and `address`, a relation to the `address` table of `symfony-geo` (`Address`). The address is pointed at and never copied: a move is written on that row, once, for every identity reading it, and what must not move with it is frozen as an `AddressSnapshot` by the document issuing it. An identity can have a country without an address, which is what an import usually knows of it. `externalReference` keeps the key of another system it comes from (an import, a CRM); `notes` are free.
 
 `OrganizationService` adds without adding twice:
 
