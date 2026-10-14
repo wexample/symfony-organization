@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Wexample\SymfonyOrganization\:
+        resource: '../../{Repository,Service,Validator}'
+        exclude: '../../Service/Identifier/AbstractLegalIdentifierScheme.php'
+
+    Wexample\SymfonyOrganization\Service\Identifier\LegalIdentifierSchemeRegistry:
+        public: true
+        arguments:
+            $schemes: !tagged_iterator wexample_symfony_organization.legal_identifier_scheme

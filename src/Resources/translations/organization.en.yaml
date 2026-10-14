@@ -1,0 +1,18 @@
+identity:
+  name: Name
+  legal_identifier: Company number
+  vat_number: VAT number
+  legal_form: Legal form
+  individual: Private person
+  email: Email
+  phone: Phone
+  website: Website
+  fr:
+    siret: SIRET
+    vat_number: Intra-community VAT number
+  be:
+    enterprise_number: Enterprise number
+    vat_number: VAT number
+  error:
+    legal_identifier: This identifier is not valid for this country.
+    vat_number: This VAT number is not valid.

@@ -1,0 +1,30 @@
+## The directory
+
+`Organization` (table `organization`) holds a legal identity, through `HasLegalIdentityTrait`: `name`, `legalIdentifier`, `vatNumber` (normalized: no space, dot nor dash, upper case), `legalForm`, `individual` (a private person: B2C rules, no VAT number), `email`, `phone`, `website`, and the postal address of `symfony-geo` (`HasPostalAddressTrait`), whose country is the organization's. `externalReference` keeps the key of another system it comes from (an import, a CRM); `notes` are free.
+
+`OrganizationService` adds without adding twice:
+
+```php
+$acme = $organizationService->create('Acme SRL', $belgium, '0123.456.749', 'BE0123456749');  // persisted, not flushed
+$same = $organizationService->find(vatNumber: 'BE 0123.456.749');                              // by VAT number
+$same = $organizationService->find($belgium, '0123456749');                                     // by the country's identifier
+$acme = $organizationService->findOrCreate('ACME', $belgium, vatNumber: 'BE0123456749');      // found, not created
+```
+
+A legal identifier is stored as its country normalizes it, and found only within that country.
+
+## Pointing to an organization
+
+An entity that is, or acts for, an organization implements `HasOrganizationInterface` (`getOrganization()`) and, to read as it, `LegalIdentityInterface` through `DelegatesLegalIdentityTrait`: its getters read the organization's. Its identity is changed on the organization, once for everyone pointing to it; documents that must not change afterwards copy it when issued. Validate the relation (`#[Assert\Valid]`) so an identity typed through the entity follows its country's rules.
+
+## Identifiers by country
+
+A `LegalIdentifierSchemeInterface` per country names its identifiers (translation keys, domain `organization`) and validates them: `normalizeLegalIdentifier()`, `formatLegalIdentifier()`, `isLegalIdentifierValid()`, `isVatNumberValid()`, `isLegalIdentifierIncludedInVatNumber()` (BE: the VAT number contains the enterprise number, so a document prints one of them), `buildVatNumber()`. Shipped: France (`FrLegalIdentifierScheme`: SIREN/SIRET, the FR VAT key) and Belgium (`BeLegalIdentifierScheme`: the enterprise number, modulo 97); any other country gets the generic rules. A new country is one class implementing the interface — it is registered by autoconfiguration. `LegalIdentifierSchemeRegistry::forCountry('BE')` or `forIdentity($organization)` gives the scheme. The `#[ValidLegalIdentity]` class constraint, on `Organization`, refuses an identifier or a VAT number its country rejects. `FrIdentityHelper` and `BeIdentityHelper` are the plain static rules underneath.
+
+## VIES
+
+`VatNumberVerifier::isConfirmed($vatNumber)` asks VIES (`symfony-remote-vies`) whether a VAT number is valid; a VIES giving no verdict confirms nothing.
+
+## Front
+
+`Organization` is exported to TypeScript in `assets/` (`Entity/Organization.ts`, its repository, `data/entity/organization.json`), following the entity export pipeline of `symfony-api`. Screens editing an identity embed `LegalIdentityType` of `symfony-organization-ds`.

@@ -1,0 +1,18 @@
+identity:
+  name: Nom
+  legal_identifier: Numéro d'entreprise
+  vat_number: Numéro de TVA
+  legal_form: Forme juridique
+  individual: Particulier
+  email: Email
+  phone: Téléphone
+  website: Site web
+  fr:
+    siret: SIRET
+    vat_number: N° TVA intracommunautaire
+  be:
+    enterprise_number: N° d'entreprise
+    vat_number: N° TVA
+  error:
+    legal_identifier: Cet identifiant n'est pas valide pour ce pays.
+    vat_number: Ce numéro de TVA n'est pas valide.
