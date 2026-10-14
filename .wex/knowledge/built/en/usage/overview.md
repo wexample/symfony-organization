@@ -1,0 +1,54 @@
+## The directory
+
+`Organization` (table `organization`) holds a legal identity, through `HasLegalIdentityTrait`: `name`, `legalIdentifier`, `vatNumber` (normalized: no space, dot nor dash, upper case), `legalForm`, `individual` (a private person: B2C rules, no VAT number), `email`, `phone`, `website`, `country` — the one it is registered in, which decides how it is identified and taxed — and `address`, a relation to the `address` table of `symfony-geo` (`Address`). The address is pointed at and never copied: a move is written on that row, once, for every identity reading it, and what must not move with it is frozen as an `AddressSnapshot` by the document issuing it. An identity can have a country without an address, which is what an import usually knows of it. `externalReference` keeps the key of another system it comes from (an import, a CRM); `notes` are free.
+
+`OrganizationService` adds without adding twice:
+
+```php
+$acme = $organizationService->create('Acme SRL', $belgium, '0123.456.749', 'BE0123456749');  // persisted, not flushed
+$same = $organizationService->find(vatNumber: 'BE 0123.456.749');                              // by VAT number
+$same = $organizationService->find($belgium, '0123456749');                                     // by the country's identifier
+$acme = $organizationService->findOrCreate('ACME', $belgium, vatNumber: 'BE0123456749');      // found, not created
+```
+
+A legal identifier is stored as its country normalizes it, and found only within that country.
+
+## Pointing to an organization
+
+An entity that is, or acts for, an organization implements `HasOrganizationInterface` (`getOrganization()`) and, to read as it, `LegalIdentityInterface` through `DelegatesLegalIdentityTrait`: its getters read the organization's. Its identity is changed on the organization, once for everyone pointing to it; documents that must not change afterwards copy it when issued. Validate the relation (`#[Assert\Valid]`) so an identity typed through the entity follows its country's rules.
+
+## Address book
+
+An organization keeps the people met there as `Contact` (table `organization_contact`): a name, a job title ("Gérant", "Représentant légal", "Comptabilité"), an email, a phone, notes. A contact is a person, not an account — it may never log in — and it belongs to one organization, deleted with it. `ContactRepository::saveNewContact($organization, 'Jane Doe', 'Représentant légal')` adds one to the book.
+
+`Organization::getBillingContact()` is the one its invoices are addressed to; it must be one of its own contacts (`setBillingContact()` refuses another's), and removing it from the book unsets it.
+
+## Members
+
+The accounts belonging to an organization are symfony-user's memberships, the organization being the group (`MembershipGroupInterface`): `OrganizationMembership` (table `organization_membership`) links an account to it with grants, `owner` by default — a grant this bundle declares for symfony-user, beside the application's own. So `is_granted('owner', $organization)` and `MembershipService` answer for organizations as for any group.
+
+The account is the application's class, which the package does not know. It points at `UserEntityInterface`, and the application wires two things:
+
+```yaml
+# config/packages/doctrine.yaml
+doctrine:
+  orm:
+    resolve_target_entities:
+      Wexample\SymfonyHelpers\Entity\Interfaces\UserEntityInterface: App\Entity\User
+```
+
+and its user class uses `HasOrganizationMembershipsTrait` (the other side of the relation, `getOrganizations()`) and implements `MemberInterface`, adding `getOrganizationMemberships()` to what `getMemberships()` yields. Without both, the mapping of `OrganizationMembership` fails to load. `OrganizationMembershipRepository::saveNewOrganizationMembership($organization, $user)` adds a member.
+
+An organization can in turn be a member of a group of the application — a project counting organizations among its contributors —, an account then acting with their grants through `RepresentativeInterface`.
+
+## Identifiers by country
+
+A `LegalIdentifierSchemeInterface` per country names its identifiers (translation keys, domain `organization`) and validates them: `normalizeLegalIdentifier()`, `formatLegalIdentifier()`, `isLegalIdentifierValid()`, `isVatNumberValid()`, `isLegalIdentifierIncludedInVatNumber()` (BE: the VAT number contains the enterprise number, so a document prints one of them), `buildVatNumber()`. Shipped: France (`FrLegalIdentifierScheme`: SIREN/SIRET, the FR VAT key) and Belgium (`BeLegalIdentifierScheme`: the enterprise number, modulo 97); any other country gets the generic rules. A new country is one class implementing the interface — it is registered by autoconfiguration. `LegalIdentifierSchemeRegistry::forCountry('BE')` or `forIdentity($organization)` gives the scheme. The `#[ValidLegalIdentity]` class constraint, on `Organization`, refuses an identifier or a VAT number its country rejects. `FrIdentityHelper` and `BeIdentityHelper` are the plain static rules underneath.
+
+## VIES
+
+`VatNumberVerifier::isConfirmed($vatNumber)` asks VIES (`symfony-remote-vies`) whether a VAT number is valid; a VIES giving no verdict confirms nothing.
+
+## Front
+
+`Organization` is exported to TypeScript in `assets/` (`Entity/Organization.ts`, its repository, `data/entity/organization.json`), following the entity export pipeline of `symfony-api`. Screens editing an identity embed `LegalIdentityType` of `symfony-organization-ds`.
