@@ -1,0 +1,140 @@
+items:
+  - name: Contact
+    type: class
+    description: "Someone at an organization of the directory — its manager, its legal\nrepresentative, the person its invoices are addressed to —: one entry of\nits address book. A person, not an account: a contact may never log in."
+    properties:
+      - name: id
+        type: Symfony\Component\Uid\Uuid
+      - name: organization
+        type: Organization
+      - name: name
+        type: string
+      - name: jobTitle
+        type: string
+        nullable: true
+        default: null
+      - name: email
+        type: string
+        nullable: true
+        default: null
+      - name: phone
+        type: string
+        nullable: true
+        default: null
+      - name: notes
+        type: string
+        nullable: true
+        default: null
+      - name: dateCreated
+        type: DateTimeImmutable
+    methods:
+      - type: method
+        name: buildEntityPath
+        parameters:
+          - type: string
+            name: className
+        return:
+          type: string
+      - type: method
+        name: getEntityKeyName
+        return:
+          type: string
+      - type: method
+        name: getEntityShortName
+        return:
+          type: string
+      - type: method
+        name: getId
+        return:
+          type: Symfony\Component\Uid\Uuid
+      - type: method
+        name: setId
+        parameters:
+          - type: Symfony\Component\Uid\Uuid
+            name: id
+        return:
+          type: void
+      - type: method
+        name: getTableizedName
+        return:
+          type: string
+      - type: method
+        name: getCamelName
+        return:
+          type: string
+      - type: method
+        name: __construct
+      - type: method
+        name: __toString
+        return:
+          type: string
+      - type: method
+        name: getOrganization
+        return:
+          type: Organization
+      - type: method
+        name: setOrganization
+        parameters:
+          - type: Organization
+            name: organization
+        return:
+          type: static
+      - type: method
+        name: getName
+        return:
+          type: string
+      - type: method
+        name: setName
+        parameters:
+          - type: string
+            name: name
+        return:
+          type: static
+      - type: method
+        name: getJobTitle
+        return:
+          type: string
+      - type: method
+        name: setJobTitle
+        parameters:
+          - type: string
+            name: jobTitle
+        return:
+          type: static
+      - type: method
+        name: getEmail
+        return:
+          type: string
+      - type: method
+        name: setEmail
+        parameters:
+          - type: string
+            name: email
+        return:
+          type: static
+      - type: method
+        name: getPhone
+        return:
+          type: string
+      - type: method
+        name: setPhone
+        parameters:
+          - type: string
+            name: phone
+        return:
+          type: static
+      - type: method
+        name: getNotes
+        return:
+          type: string
+      - type: method
+        name: setNotes
+        parameters:
+          - type: string
+            name: notes
+        return:
+          type: static
+      - type: method
+        name: getDateCreated
+        return:
+          type: DateTimeImmutable

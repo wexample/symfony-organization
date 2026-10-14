@@ -1,7 +1,7 @@
 items:
   - name: Organization
     type: class
-    description: "An organization of the directory — a company, a sole trader, an\nassociation, a private person —, once, whatever points to it: the ledger\nkeeping its books, the parties it is to other ledgers, its projects, its\nmails. Its identity is changed here, for all of them; documents already\nissued keep the copy they froze."
+    description: "An organization of the directory — a company, a sole trader, an\nassociation, a private person —, once, whatever points to it: the ledger\nkeeping its books, the parties it is to other ledgers, its projects, its\nmails. Its identity is changed here, for all of them; documents already\nissued keep the copy they froze.\nIt keeps an address book of the people met there (Contact), one of whom\nits invoices are addressed to."
     properties:
       - name: name
         type: string
@@ -52,6 +52,13 @@ items:
         default: null
       - name: dateCreated
         type: DateTimeImmutable
+      - name: contacts
+        type: Collection
+        description: 'Contact> Its address book.'
+      - name: billingContact
+        type: Contact
+        nullable: true
+        default: null
     methods:
       - type: method
         name: getName
@@ -233,3 +240,35 @@ items:
         name: getDateCreated
         return:
           type: DateTimeImmutable
+      - type: method
+        name: getContacts
+        description: ''
+        return:
+          type: Collection
+          description: Contact>
+      - type: method
+        name: addContact
+        parameters:
+          - type: Contact
+            name: contact
+        return:
+          type: static
+      - type: method
+        name: removeContact
+        parameters:
+          - type: Contact
+            name: contact
+        return:
+          type: static
+      - type: method
+        name: getBillingContact
+        return:
+          type: Contact
+      - type: method
+        name: setBillingContact
+        description: 'invoices go to someone of this one.'
+        parameters:
+          - type: Contact
+            name: billingContact
+        return:
+          type: static
