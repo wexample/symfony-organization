@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyOrganization\Entity;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -27,8 +28,9 @@ use Wexample\SymfonyUser\Interface\MembershipGroupInterface;
  * issued keep the copy they froze.
  *
  * It keeps an address book of the people met there (Contact), one of whom
- * its invoices are addressed to, and the accounts belonging to it
- * (OrganizationMembership): it is a group of symfony-user's memberships.
+ * its invoices are addressed to, the places it works and worked from
+ * (Establishment, dated: its past addresses), and the accounts belonging to
+ * it (OrganizationMembership): it is a group of symfony-user's memberships.
  */
 #[PseudocodeExport(inherited: true)]
 #[ORM\Entity(repositoryClass: OrganizationRepository::class)]
@@ -59,6 +61,11 @@ class Organization extends AbstractEntity implements LegalIdentityInterface, Mem
     #[ORM\OrderBy(['name' => 'ASC'])]
     protected Collection $contacts;
 
+    /** @var Collection<int, Establishment> Where it works and worked from, the earliest first. */
+    #[ORM\OneToMany(targetEntity: Establishment::class, mappedBy: 'organization', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['dateOpened' => 'ASC'])]
+    protected Collection $establishments;
+
     /** @var Collection<int, OrganizationMembership> The accounts belonging to it. */
     #[ORM\OneToMany(targetEntity: OrganizationMembership::class, mappedBy: 'organization', cascade: ['persist'], orphanRemoval: true)]
     protected Collection $memberships;
@@ -74,6 +81,7 @@ class Organization extends AbstractEntity implements LegalIdentityInterface, Mem
 
         $this->dateCreated = new DateTimeImmutable();
         $this->contacts = new ArrayCollection();
+        $this->establishments = new ArrayCollection();
         $this->memberships = new ArrayCollection();
     }
 
@@ -167,6 +175,50 @@ class Organization extends AbstractEntity implements LegalIdentityInterface, Mem
         $this->memberships->removeElement($membership);
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Establishment>
+     */
+    public function getEstablishments(): Collection
+    {
+        return $this->establishments;
+    }
+
+    public function addEstablishment(Establishment $establishment): static
+    {
+        if (! $this->establishments->contains($establishment)) {
+            $this->establishments->add($establishment);
+            $establishment->setOrganization($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEstablishment(Establishment $establishment): static
+    {
+        $this->establishments->removeElement($establishment);
+
+        return $this;
+    }
+
+    /**
+     * The head office open on that day, or the last one when none is.
+     */
+    public function getHeadOffice(?DateTimeInterface $at = null): ?Establishment
+    {
+        $offices = array_values(array_filter(
+            $this->establishments->toArray(),
+            static fn (Establishment $establishment) => $establishment->isHeadOffice()
+        ));
+
+        foreach ($offices as $office) {
+            if ($office->isOpenAt($at ?? new DateTimeImmutable())) {
+                return $office;
+            }
+        }
+
+        return $offices ? end($offices) : null;
     }
 
     public function getBillingContact(): ?Contact

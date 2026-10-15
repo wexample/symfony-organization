@@ -1,7 +1,7 @@
 items:
   - name: Organization
     type: class
-    description: "An organization of the directory — a company, a sole trader, an\nassociation, a private person —, once, whatever points to it: the ledger\nkeeping its books, the parties it is to other ledgers, its projects, its\nmails. Its identity is changed here, for all of them; documents already\nissued keep the copy they froze.\nIt keeps an address book of the people met there (Contact), one of whom\nits invoices are addressed to, and the accounts belonging to it\n(OrganizationMembership): it is a group of symfony-user's memberships."
+    description: "An organization of the directory — a company, a sole trader, an\nassociation, a private person —, once, whatever points to it: the ledger\nkeeping its books, the parties it is to other ledgers, its projects, its\nmails. Its identity is changed here, for all of them; documents already\nissued keep the copy they froze.\nIt keeps an address book of the people met there (Contact), one of whom\nits invoices are addressed to, the places it works and worked from\n(Establishment, dated: its past addresses), and the accounts belonging to\nit (OrganizationMembership): it is a group of symfony-user's memberships."
     properties:
       - name: name
         type: string
@@ -55,6 +55,9 @@ items:
       - name: contacts
         type: Collection
         description: 'Contact> Its address book.'
+      - name: establishments
+        type: Collection
+        description: 'Establishment> Where it works and worked from, the earliest first.'
       - name: memberships
         type: Collection
         description: 'OrganizationMembership> The accounts belonging to it.'
@@ -287,6 +290,36 @@ items:
             name: membership
         return:
           type: static
+      - type: method
+        name: getEstablishments
+        description: ''
+        return:
+          type: Collection
+          description: Establishment>
+      - type: method
+        name: addEstablishment
+        parameters:
+          - type: Establishment
+            name: establishment
+        return:
+          type: static
+      - type: method
+        name: removeEstablishment
+        parameters:
+          - type: Establishment
+            name: establishment
+        return:
+          type: static
+      - type: method
+        name: getHeadOffice
+        description: 'The head office open on that day, or the last one when none is.'
+        parameters:
+          - type: DateTimeInterface
+            name: at
+            optional: true
+            default: null
+        return:
+          type: Establishment
       - type: method
         name: getBillingContact
         return:

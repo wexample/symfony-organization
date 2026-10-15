@@ -23,6 +23,17 @@ An organization keeps the people met there as `Contact` (table `organization_con
 
 `Organization::getBillingContact()` is the one its invoices are addressed to; it must be one of its own contacts (`setBillingContact()` refuses another's), and removing it from the book unsets it.
 
+## Establishments
+
+The places an organization works and worked from, as the register knows them (`Establishment`, table `organization_establishment`): each its own identifier (a French SIRET — the organization's own `legalIdentifier` is then its SIREN —, a Belgian establishment unit number), its address, when it opened and closed, whether it is the head office. An organization that moves opens a new establishment and closes the old one, so its past addresses stay, dated:
+
+```php
+$establishmentRepository->saveNewEstablishment($organization, '79163664000025', $address, headOffice: true, dateOpened: new DateTimeImmutable('2018-01-01'));
+$organization->getHeadOffice($date);   // the head office open that day, else the last one
+```
+
+The organization's `address` stays its current one; documents already issued keep the address they froze.
+
 ## Members
 
 The accounts belonging to an organization are symfony-user's memberships, the organization being the group (`MembershipGroupInterface`): `OrganizationMembership` (table `organization_membership`) links an account to it with grants, `owner` by default — a grant this bundle declares for symfony-user, beside the application's own. So `is_granted('owner', $organization)` and `MembershipService` answer for organizations as for any group.

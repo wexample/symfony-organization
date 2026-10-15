@@ -1,0 +1,143 @@
+items:
+  - name: Establishment
+    type: class
+    description: "A place an organization works from, as the register knows it: its own\nidentifier (a French SIRET, a Belgian establishment unit number), its\naddress, when it opened and closed, whether it is the head office. An\norganization moving opens a new establishment and closes the old one: its\npast addresses stay, dated."
+    properties:
+      - name: id
+        type: Symfony\Component\Uid\Uuid
+      - name: organization
+        type: Organization
+      - name: legalIdentifier
+        type: string
+        nullable: true
+        default: null
+      - name: address
+        type: Address
+        nullable: true
+        default: null
+      - name: headOffice
+        type: bool
+        default: false
+      - name: dateOpened
+        type: DateTimeImmutable
+        nullable: true
+        default: null
+      - name: dateClosed
+        type: DateTimeImmutable
+        nullable: true
+        default: null
+    methods:
+      - type: method
+        name: __construct
+      - type: method
+        name: buildEntityPath
+        parameters:
+          - type: string
+            name: className
+        return:
+          type: string
+      - type: method
+        name: getEntityKeyName
+        return:
+          type: string
+      - type: method
+        name: getEntityShortName
+        return:
+          type: string
+      - type: method
+        name: getId
+        return:
+          type: Symfony\Component\Uid\Uuid
+      - type: method
+        name: setId
+        parameters:
+          - type: Symfony\Component\Uid\Uuid
+            name: id
+        return:
+          type: void
+      - type: method
+        name: getTableizedName
+        return:
+          type: string
+      - type: method
+        name: getCamelName
+        return:
+          type: string
+      - type: method
+        name: __toString
+        return:
+          type: string
+      - type: method
+        name: getOrganization
+        return:
+          type: Organization
+      - type: method
+        name: setOrganization
+        parameters:
+          - type: Organization
+            name: organization
+        return:
+          type: static
+      - type: method
+        name: getLegalIdentifier
+        return:
+          type: string
+      - type: method
+        name: setLegalIdentifier
+        parameters:
+          - type: string
+            name: legalIdentifier
+        return:
+          type: static
+      - type: method
+        name: getAddress
+        return:
+          type: Address
+      - type: method
+        name: setAddress
+        parameters:
+          - type: Address
+            name: address
+        return:
+          type: static
+      - type: method
+        name: isHeadOffice
+        return:
+          type: bool
+      - type: method
+        name: setHeadOffice
+        parameters:
+          - type: bool
+            name: headOffice
+        return:
+          type: static
+      - type: method
+        name: getDateOpened
+        return:
+          type: DateTimeImmutable
+      - type: method
+        name: setDateOpened
+        parameters:
+          - type: DateTimeImmutable
+            name: dateOpened
+        return:
+          type: static
+      - type: method
+        name: getDateClosed
+        return:
+          type: DateTimeImmutable
+      - type: method
+        name: setDateClosed
+        parameters:
+          - type: DateTimeImmutable
+            name: dateClosed
+        return:
+          type: static
+      - type: method
+        name: isOpenAt
+        description: 'Open on that day: opened on or before it, not closed before it.'
+        parameters:
+          - type: DateTimeInterface
+            name: date
+        return:
+          type: bool
