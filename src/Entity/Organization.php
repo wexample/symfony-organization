@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Wexample\Pseudocode\Attribute\PseudocodeExport;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
+use Wexample\SymfonyMedia\Entity\Media;
 use Wexample\SymfonyOrganization\Entity\Traits\HasLegalIdentityTrait;
 use Wexample\SymfonyOrganization\Interface\LegalIdentityInterface;
 use Wexample\SymfonyOrganization\Repository\OrganizationRepository;
@@ -69,6 +70,11 @@ class Organization extends AbstractEntity implements LegalIdentityInterface, Mem
     /** @var Collection<int, OrganizationMembership> The accounts belonging to it. */
     #[ORM\OneToMany(targetEntity: OrganizationMembership::class, mappedBy: 'organization', cascade: ['persist'], orphanRemoval: true)]
     protected Collection $memberships;
+
+    /** Its logo, or a person's picture: a media of the library, gone when the media is. */
+    #[ORM\ManyToOne(targetEntity: Media::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    protected ?Media $logo = null;
 
     /** Whom its invoices are addressed to, one of its own contacts. */
     #[ORM\ManyToOne(targetEntity: Contact::class)]
@@ -219,6 +225,18 @@ class Organization extends AbstractEntity implements LegalIdentityInterface, Mem
         }
 
         return $offices ? end($offices) : null;
+    }
+
+    public function getLogo(): ?Media
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?Media $logo): static
+    {
+        $this->logo = $logo;
+
+        return $this;
     }
 
     public function getBillingContact(): ?Contact

@@ -34,6 +34,10 @@ $organization->getHeadOffice($date);   // the head office open that day, else th
 
 The organization's `address` stays its current one; documents already issued keep the address they froze.
 
+## Logo
+
+`Organization::getLogo()` is a media of symfony-media's library (a person's picture, for an individual), `null` once that media is deleted. The organization pages of `symfony-organization-ds` show it.
+
 ## Members
 
 The accounts belonging to an organization are symfony-user's memberships, the organization being the group (`MembershipGroupInterface`): `OrganizationMembership` (table `organization_membership`) links an account to it with grants, `owner` by default — a grant this bundle declares for symfony-user, beside the application's own. So `is_granted('owner', $organization)` and `MembershipService` answer for organizations as for any group.

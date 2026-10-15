@@ -96,6 +96,12 @@
             "description": "OrganizationMembership> The accounts belonging to it."
         },
         {
+            "name": "logo",
+            "type": "Media",
+            "nullable": true,
+            "default": null
+        },
+        {
             "name": "billingContact",
             "type": "Contact",
             "nullable": true,
@@ -555,6 +561,26 @@
             ],
             "return": {
                 "type": "Establishment"
+            }
+        },
+        {
+            "type": "method",
+            "name": "getLogo",
+            "return": {
+                "type": "Media"
+            }
+        },
+        {
+            "type": "method",
+            "name": "setLogo",
+            "parameters": [
+                {
+                    "type": "Media",
+                    "name": "logo"
+                }
+            ],
+            "return": {
+                "type": "static"
             }
         },
         {

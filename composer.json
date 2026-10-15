@@ -30,7 +30,8 @@
     "wexample/symfony-search": ">=4.1.0",
     "wexample/symfony-user": ">=12.0.1",
     "wexample/php-pseudocode": ">=2.2.0",
-    "wexample/symfony-pseudocode": ">=3.0.0"
+    "wexample/symfony-pseudocode": ">=3.0.0",
+    "wexample/symfony-media": ">=2.0.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^13"
