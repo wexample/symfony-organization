@@ -11,7 +11,7 @@ use Wexample\SymfonyOrganization\Interface\LegalIdentityInterface;
 class LegalIdentifierSchemeRegistry
 {
     /** @var array<string, LegalIdentifierSchemeInterface> */
-    private array $schemes = [];
+    private readonly array $schemes;
 
     private readonly LegalIdentifierSchemeInterface $default;
 
@@ -20,13 +20,15 @@ class LegalIdentifierSchemeRegistry
      */
     public function __construct(iterable $schemes = [])
     {
+        $byCountry = [];
         foreach ($schemes as $scheme) {
             if ($code = $scheme->getCountryCode()) {
-                $this->schemes[strtoupper($code)] = $scheme;
+                $byCountry[strtoupper($code)] = $scheme;
             }
         }
 
         $this->default = new DefaultLegalIdentifierScheme();
+        $this->schemes = $byCountry;
     }
 
     public function forCountry(?string $countryCode): LegalIdentifierSchemeInterface
