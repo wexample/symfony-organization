@@ -1,6 +1,6 @@
 # symfony-organization
 
-Version: 2.0.0
+Version: 3.0.0
 
 ## The directory
 
@@ -26,6 +26,21 @@ An entity that is, or acts for, an organization implements `HasOrganizationInter
 An organization keeps the people met there as `Contact` (table `organization_contact`): a name, a job title ("Gérant", "Représentant légal", "Comptabilité"), an email, a phone, notes. A contact is a person, not an account — it may never log in — and it belongs to one organization, deleted with it. `ContactRepository::saveNewContact($organization, 'Jane Doe', 'Représentant légal')` adds one to the book.
 
 `Organization::getBillingContact()` is the one its invoices are addressed to; it must be one of its own contacts (`setBillingContact()` refuses another's), and removing it from the book unsets it.
+
+## Establishments
+
+The places an organization works and worked from, as the register knows them (`Establishment`, table `organization_establishment`): each its own identifier (a French SIRET — the organization's own `legalIdentifier` is then its SIREN —, a Belgian establishment unit number), its address, when it opened and closed, whether it is the head office. An organization that moves opens a new establishment and closes the old one, so its past addresses stay, dated:
+
+```php
+$establishmentRepository->saveNewEstablishment($organization, '79163664000025', $address, headOffice: true, dateOpened: new DateTimeImmutable('2018-01-01'));
+$organization->getHeadOffice($date);   // the head office open that day, else the last one
+```
+
+The organization's `address` stays its current one; documents already issued keep the address they froze.
+
+## Logo
+
+`Organization::getLogo()` is a media of symfony-media's library (a person's picture, for an individual), `null` once that media is deleted. The organization pages of `symfony-organization-ds` show it.
 
 ## Members
 
@@ -62,6 +77,8 @@ A `LegalIdentifierSchemeInterface` per country names its identifiers (translatio
 - [The directory](#the-directory)
 - [Pointing to an organization](#pointing-to-an-organization)
 - [Address book](#address-book)
+- [Establishments](#establishments)
+- [Logo](#logo)
 - [Members](#members)
 - [Identifiers by country](#identifiers-by-country)
 - [VIES](#vies)
@@ -103,20 +120,19 @@ This package is part of the Wexample Suite — a collection of high-quality, mod
 
 The suite includes packages for configuration management, file handling, prompts, and more. Each package can be used independently or as part of the integrated suite.
 
-Visit the [Wexample Suite documentation](https://docs.wexample.com) for the complete package ecosystem.
-
 ## Dependencies
 
 - php: >=8.5
 - doctrine/orm: ^3.0
 - symfony/validator: ^7.4 || ^8.0
-- wexample/symfony-helpers: >=16.0.0
+- wexample/symfony-helpers: >=17.0.0
 - wexample/symfony-geo: >=7.0.0
 - wexample/symfony-remote-vies: >=2.0.0
-- wexample/symfony-search: >=4.1.0
-- wexample/symfony-user: >=12.0.1
+- wexample/symfony-search: >=4.2.0
+- wexample/symfony-user: >=13.0.0
 - wexample/php-pseudocode: >=2.2.0
-- wexample/symfony-pseudocode: >=3.0.0
+- wexample/symfony-pseudocode: >=4.0.0
+- wexample/symfony-media: >=3.0.0
 
 ## Versioning & Compatibility Policy
 
@@ -141,6 +157,8 @@ Free to use in both personal and commercial projects.
 This packages suite embodies this spirit. Trusted by professionals and enthusiasts alike, it delivers a consistent, high-quality foundation for modern development — open, elegant, and battle-tested. Its reputation is built on years of collaboration, refinement, and rigorous attention to detail, making it a natural choice for those who demand both robustness and beauty in their tools.
 
 Wexample cultivates a culture of mastery. Each package, each contribution carries the mark of a community that values precision, ethics, and innovation — a community proud to shape the future of digital craftsmanship.
+
+Built and maintained by [Romain Weeger](https://weeger.io).
 
 ## Migration Notes
 
