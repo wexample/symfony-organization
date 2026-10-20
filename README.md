@@ -1,6 +1,6 @@
 # symfony-organization
 
-Version: 3.0.1
+Version: 3.0.2
 
 ## The directory
 
@@ -125,14 +125,14 @@ The suite includes packages for configuration management, file handling, prompts
 - php: >=8.5
 - doctrine/orm: ^3.0
 - symfony/validator: ^7.4 || ^8.0
-- wexample/symfony-helpers: >=17.0.0
+- wexample/symfony-helpers: >=18.0.0
 - wexample/symfony-geo: >=8.0.0
 - wexample/symfony-remote-vies: >=2.0.0
 - wexample/symfony-search: >=4.2.0
 - wexample/symfony-user: >=14.0.0
 - wexample/php-pseudocode: >=2.2.0
 - wexample/symfony-pseudocode: >=4.0.0
-- wexample/symfony-media: >=4.0.0
+- wexample/symfony-media: >=5.0.0
 
 ## Versioning & Compatibility Policy
 
