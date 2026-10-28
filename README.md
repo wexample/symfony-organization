@@ -1,6 +1,6 @@
 # symfony-organization
 
-Version: 3.0.6
+Version: 3.0.7
 
 A directory of organizations and their legal identity for Symfony
 
