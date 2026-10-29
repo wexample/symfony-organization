@@ -1,7 +1,7 @@
 {
   "name": "wexample/symfony-organization",
   "description": "A directory of organizations and their legal identity for Symfony",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "type": "library",
   "license": "MIT",
   "autoload": {
@@ -24,11 +24,11 @@
     "php": ">=8.5",
     "doctrine/orm": "^3.0",
     "symfony/validator": "^7.4 || ^8.0",
-    "wexample/symfony-helpers": ">=19.0.0",
+    "wexample/symfony-helpers": ">=19.1.0",
     "wexample/symfony-geo": ">=8.0.2",
     "wexample/symfony-remote-vies": ">=2.0.4",
     "wexample/symfony-search": ">=5.0.0",
-    "wexample/symfony-user": ">=17.0.0",
+    "wexample/symfony-user": ">=18.0.0",
     "wexample/php-pseudocode": ">=3.0.0",
     "wexample/symfony-pseudocode": ">=4.0.2",
     "wexample/symfony-media": ">=6.0.0"
