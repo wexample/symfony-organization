@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Wexample\SymfonyGeo\Entity\Address;
 use Wexample\SymfonyGeo\Entity\Country;
+use Wexample\SymfonyOrganization\Helper\LegalIdentityHelper;
 
 /**
  * The columns of a legal identity (LegalIdentityInterface): name, legal
@@ -86,7 +87,7 @@ trait HasLegalIdentityTrait
 
     public function setVatNumber(?string $vatNumber): static
     {
-        $this->vatNumber = null === $vatNumber ? null : strtoupper(preg_replace('/[\s.\-]/', '', $vatNumber));
+        $this->vatNumber = null === $vatNumber ? null : LegalIdentityHelper::normalize($vatNumber);
 
         return $this;
     }

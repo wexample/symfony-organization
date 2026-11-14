@@ -5,6 +5,7 @@ namespace Wexample\SymfonyOrganization\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Wexample\SymfonyGeo\Entity\Country;
 use Wexample\SymfonyOrganization\Entity\Organization;
+use Wexample\SymfonyOrganization\Helper\LegalIdentityHelper;
 use Wexample\SymfonyOrganization\Repository\OrganizationRepository;
 use Wexample\SymfonyOrganization\Service\Identifier\LegalIdentifierSchemeRegistry;
 
@@ -66,7 +67,7 @@ class OrganizationService
         ?string $vatNumber = null,
     ): ?Organization {
         if ($vatNumber) {
-            $vatNumber = strtoupper(preg_replace('/[\s.\-]/', '', $vatNumber));
+            $vatNumber = LegalIdentityHelper::normalize($vatNumber);
 
             if ($organization = $this->organizationRepository->findOneByVatNumber($vatNumber)) {
                 return $organization;

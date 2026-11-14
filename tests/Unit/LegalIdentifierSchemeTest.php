@@ -59,6 +59,10 @@ class LegalIdentifierSchemeTest extends TestCase
         $this->assertNull($scheme->buildVatNumber('0123.456.748'));
         $this->assertTrue($scheme->isLegalIdentifierIncludedInVatNumber());
         $this->assertFalse($scheme->isVatNumberValid('BE0123456748'));
+        // Its own number however typed: read as the country's, its checksum checked.
+        $this->assertTrue($scheme->isVatNumberValid(' be 0123.456.749'));
+        $this->assertFalse($scheme->isVatNumberValid('B-E0123456748'));
+        $this->assertFalse($scheme->isVatNumberValid('.BE0123456748'));
     }
 
     public function testGenericRules(): void

@@ -45,7 +45,7 @@ class BeIdentityHelper
 
     public static function isValidVatNumber(string $vatNumber): bool
     {
-        $vatNumber = strtoupper(preg_replace('/[\s.\-]/', '', $vatNumber));
+        $vatNumber = LegalIdentityHelper::normalize($vatNumber);
 
         return str_starts_with($vatNumber, 'BE') && static::isValidEnterpriseNumber(substr($vatNumber, 2));
     }

@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyOrganization\Service\Identifier;
 
+use Wexample\SymfonyOrganization\Helper\LegalIdentityHelper;
 use Wexample\SymfonyOrganization\Interface\LegalIdentifierSchemeInterface;
 
 /**
@@ -21,7 +22,7 @@ abstract class AbstractLegalIdentifierScheme implements LegalIdentifierSchemeInt
 
     public function normalizeLegalIdentifier(string $identifier): string
     {
-        return strtoupper(preg_replace('/[\s.\-]/', '', $identifier));
+        return LegalIdentityHelper::normalize($identifier);
     }
 
     public function formatLegalIdentifier(string $identifier): string
@@ -36,7 +37,7 @@ abstract class AbstractLegalIdentifierScheme implements LegalIdentifierSchemeInt
 
     public function isVatNumberValid(string $vatNumber): bool
     {
-        return 1 === preg_match('/^[A-Z]{2}[0-9A-Z]{2,13}$/', strtoupper(preg_replace('/[\s.\-]/', '', $vatNumber)));
+        return 1 === preg_match('/^[A-Z]{2}[0-9A-Z]{2,13}$/', LegalIdentityHelper::normalize($vatNumber));
     }
 
     public function isLegalIdentifierIncludedInVatNumber(): bool
@@ -54,6 +55,6 @@ abstract class AbstractLegalIdentifierScheme implements LegalIdentifierSchemeInt
      */
     protected function isOwnVatNumber(string $vatNumber): bool
     {
-        return str_starts_with(strtoupper(trim($vatNumber)), (string) $this->getCountryCode());
+        return str_starts_with(LegalIdentityHelper::normalize($vatNumber), (string) $this->getCountryCode());
     }
 }
