@@ -56,7 +56,7 @@ class VatNumberVerifierTest extends TestCase
     private function verifier(MockResponse $response): VatNumberVerifier
     {
         $logs = &$this->logs;
-        $logger = new class($logs) extends AbstractLogger {
+        $logger = new class ($logs) extends AbstractLogger {
             public function __construct(private array &$logs)
             {
             }
