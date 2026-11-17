@@ -35,16 +35,19 @@ class PositionRepository extends AbstractRepository
     }
 
     /**
-     * Their positions, the latest first.
+     * Their positions, the latest first, the undated last.
      *
      * @return list<Position>
      */
     public function findByPerson(Person $person): array
     {
+        // DQL has no NULLS LAST, and PostgreSQL puts nulls first in a descending order.
         return $this->createQueryBuilder('position')
+            ->addSelect('CASE WHEN position.dateStart IS NULL THEN 1 ELSE 0 END AS HIDDEN undated')
             ->where('position.person = :person')
             ->setParameter('person', $person->getId(), UuidType::NAME)
-            ->orderBy('position.dateStart', 'DESC')
+            ->orderBy('undated', 'ASC')
+            ->addOrderBy('position.dateStart', 'DESC')
             ->getQuery()
             ->getResult();
     }
