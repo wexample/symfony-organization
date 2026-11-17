@@ -72,6 +72,27 @@ class PositionRepository extends AbstractRepository
     }
 
     /**
+     * How many people held a position in each organization of a kind, by
+     * organization id: the size of a party, of a government.
+     *
+     * @return array<string, int>
+     */
+    public function countPeopleByOrganizationKind(string $kind): array
+    {
+        $rows = $this->createQueryBuilder('position')
+            ->select('IDENTITY(position.organization) AS organizationId')
+            ->addSelect('COUNT(DISTINCT position.person) AS people')
+            ->innerJoin('position.organization', 'organization')
+            ->where('organization.kind = :kind')
+            ->setParameter('kind', $kind)
+            ->groupBy('position.organization')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column(array_map(static fn (array $row): array => [(string) $row['organizationId'], (int) $row['people']], $rows), 1, 0);
+    }
+
+    /**
      * Who held a position there, the earliest first.
      *
      * @return list<Position>
