@@ -81,6 +81,34 @@ class Organization extends AbstractEntity implements LegalIdentityInterface, Mem
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?Contact $billingContact = null;
 
+    /**
+     * What kind of organization it is, in the application's words — `party`,
+     * `government`, `assembly`, `newsroom` —; null for an ordinary one.
+     */
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true)]
+    protected ?string $kind = null;
+
+    /**
+     * What it belongs to: a government to the executive power it is one of, a
+     * group to its assembly. Null at the top.
+     */
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    protected ?self $parent = null;
+
+    /** @var Collection<int, self> What belongs to it, the earliest first. */
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent')]
+    #[ORM\OrderBy(['dateStart' => 'ASC'])]
+    protected Collection $children;
+
+    /** When it began — a party founded, a government formed —, when known. */
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    protected ?DateTimeImmutable $dateStart = null;
+
+    /** When it ended; null while it lasts. */
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    protected ?DateTimeImmutable $dateEnd = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -89,6 +117,7 @@ class Organization extends AbstractEntity implements LegalIdentityInterface, Mem
         $this->contacts = new ArrayCollection();
         $this->establishments = new ArrayCollection();
         $this->memberships = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -106,6 +135,73 @@ class Organization extends AbstractEntity implements LegalIdentityInterface, Mem
         $this->externalReference = $externalReference;
 
         return $this;
+    }
+
+    public function getKind(): ?string
+    {
+        return $this->kind;
+    }
+
+    public function setKind(?string $kind): static
+    {
+        $this->kind = $kind;
+
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Both sides kept in step, so that a parent reads right before the flush.
+     */
+    public function setParent(?self $parent): static
+    {
+        $this->parent?->children->removeElement($this);
+        $this->parent = $parent;
+        $parent?->children->add($this);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getChildren(): Collection
+    {
+        return $this->children;
+    }
+
+    public function getDateStart(): ?DateTimeImmutable
+    {
+        return $this->dateStart;
+    }
+
+    public function getDateEnd(): ?DateTimeImmutable
+    {
+        return $this->dateEnd;
+    }
+
+    public function setPeriod(
+        ?DateTimeImmutable $dateStart,
+        ?DateTimeImmutable $dateEnd
+    ): static {
+        $this->dateStart = $dateStart;
+        $this->dateEnd = $dateEnd;
+
+        return $this;
+    }
+
+    /**
+     * Whether it existed on $date: begun by then, not yet ended. An unknown start
+     * or end does not exclude it.
+     */
+    public function isActiveAt(DateTimeInterface $date): bool
+    {
+        return (null === $this->dateStart || $this->dateStart <= $date)
+            && (null === $this->dateEnd || $this->dateEnd >= $date);
     }
 
     public function getNotes(): ?string
