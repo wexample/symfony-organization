@@ -9,12 +9,18 @@ use Wexample\SymfonyOrganization\Entity\Organization;
  * @method Organization|null find($id, $lockMode = null, $lockVersion = null)
  * @method Organization|null findOneBy(array $criteria, array $orderBy = null)
  * @method Organization[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Organization      saveNewOrganization(string $name)
  */
 class OrganizationRepository extends AbstractRepository
 {
     public static function getEntityClassName(): string
     {
         return Organization::class;
+    }
+
+    public function createNewOrganization(string $name): Organization
+    {
+        return (new Organization())->setName($name);
     }
 
     /**
